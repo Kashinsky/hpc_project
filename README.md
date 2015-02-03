@@ -10,6 +10,8 @@ Description:
 Backlog: 
     This is the backlog for the hpc project. The log is subject to change and is very vague.
 
+    [x] Get Github working for us.
+
     [ ] Research into Checkers ai.
 
     [ ] Research into genetic algorithms specific to Checkers
