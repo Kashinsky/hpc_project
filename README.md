@@ -1,7 +1,8 @@
 # hpc_project
 Authors: 
-   Dillon Yeh <yehda194@potsdam.edu>
+   Dillon Yeh <yehda194@potsdam.edu>,
    John Kosowsky <kosowsjm195@potsdam.edu>
+
 Description: 
     This is a project to create a working Checkers AI using genetic algorithms and parallel processing.
     More information on this will be added in the future.
