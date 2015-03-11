@@ -30,6 +30,7 @@ public class Reversi {
         Scanner sc = new Scanner(System.in);
         int turn = 1;
         while(true) {
+            System.out.println(printBoard());
             System.out.println(printPieces(turn));
             System.out.print("PROMPT> ");
             int row = sc.nextInt();
@@ -39,20 +40,17 @@ public class Reversi {
                     System.out.println("You done goofed");
                     continue;
                 }
-                gameboard.setSpace(row, col, 1);
+                gameboard.setSpaceRecurse(new Point(row, col), 1);
                 turn = 2;
             } else {
                 if(!gameboard.isLegal(row,col,2)) {
                     System.out.println("You done goofed");
                     continue;
                 }
-                gameboard.setSpace(row, col, 2);
+                gameboard.setSpaceRecurse(new Point(row, col), 2);
                 turn = 1;
             }
-            System.out.println(printBoard());
-
         }
-
     }
 
     public static void main(String [] args) {

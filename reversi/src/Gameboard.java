@@ -16,10 +16,10 @@ public class Gameboard {
         }
         this.size = size;
         int firstPos = size / 2 - 1;
-        setSpace(firstPos,firstPos,1);
-        setSpace(firstPos,firstPos+1,2);
-        setSpace(firstPos+1,firstPos,2);
-        setSpace(firstPos+1,firstPos+1,1);
+        setSpace(new Point(firstPos,firstPos),1);
+        setSpace(new Point(firstPos,firstPos+1),2);
+        setSpace(new Point(firstPos+1,firstPos),2);
+        setSpace(new Point(firstPos+1,firstPos+1),1);
     }
 
     public String toString() {
@@ -78,19 +78,21 @@ public class Gameboard {
         return board[p.y][p.x];
     }
 
-    public int setSpace(Point p, int val) {
-        return setSpace(p.x,p.y, val);
+    private int setSpace(Point p, int val) {
+        board[p.y][p.x] = val;
+        return board[p.y][p.x];
     }
 
-    public int setSpace(int row, int col, int val) {
-        board[col][row] = val;
-        return board[col][row];
-    }
 
-    public int setNewSpace(int row, int col, int val) {
-        Point temp = new Point(row, col);
+    public int setSpaceRecurse(Point p, int val) {
+        boolean b = false;
         for(int i = 0; i < DELTAS.length; i++) {
-            convertSpaces((Point)temp.clone(), DELTAS[i], val);
+            if(convertSpaces((Point) p.clone(), DELTAS[i], val)) {
+                b = true;
+            }
+        }
+        if(b) {
+            setSpace(p, val);
         }
         return val;
     }
@@ -100,9 +102,12 @@ public class Gameboard {
         p.y += d.y;
         if (p.x < 0 || p.y < 0 || p.x >= this.size || p.y >= this.size || getSpace(p) == 0)
             return false;
-        if(convertSpaces(p,d,val)) {
+        if(convertSpaces((Point) p.clone(), d, val)) {
+           setSpace(p, val);
            return true; 
         }
-        return true;
+        if(getSpace(p) == val)
+            return true;
+        return false;
     }
 }
