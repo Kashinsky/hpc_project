@@ -31,19 +31,19 @@ public class Reversi {
         int turn = 1;
         while(true) {
             System.out.println(printBoard());
-            System.out.println(printPieces(turn));
-            System.out.print("PROMPT> ");
+            //System.out.println(printPieces(turn));
+            System.out.printf("Player(%d)> ", turn);
             int row = sc.nextInt();
             int col = sc.nextInt();
             if(turn == 1) {
-                if(!gameboard.isLegal(row,col,1)) {
+                if(!gameboard.isLegal(new Point(row,col), 1, false)) {
                     System.out.println("You done goofed");
                     continue;
                 }
                 gameboard.setSpaceRecurse(new Point(row, col), 1);
                 turn = 2;
             } else {
-                if(!gameboard.isLegal(row,col,2)) {
+                if(!gameboard.isLegal(new Point(row,col), 2, false)) {
                     System.out.println("You done goofed");
                     continue;
                 }

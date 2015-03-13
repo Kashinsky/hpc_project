@@ -24,7 +24,9 @@ public class Gameboard {
 
     public String toString() {
         String b = "";
+        b += "  0 1 2 3 4 5 6 7\n";
         for(int i = 0; i < size; i++) {
+            b += i;
             for(int j = 0; j < size; j++) {
                 b += " " + getSpace(new Point(i,j));
             }
@@ -32,35 +34,7 @@ public class Gameboard {
         }
         return b;
     }
-
-    public boolean isLegal(int row, int col, int player) {
-        Point curr = new Point(row, col);
-        if(getSpace(curr) != 0) {
-            return false;
-        }
-        // Check top-left
-        for(int i = 0; i < DELTAS.length; i++) {
-            String s = getValuesInPath(curr, DELTAS[i].x, DELTAS[i].y, player);
-            System.out.println(s);
-            int otherplayer = player % 2 + 1;
-            if(Pattern.matches(player + "[" + otherplayer + "]+" + player + ".*", s))
-                return true;   
-        }
-        return false;
-    }
-
-    private String getValuesInPath(Point p, int dx, int dy, int player) {
-        String s = "" + player;
-        Point temp = new Point(p.x, p.y);
-        temp.x += dx;
-        temp.y += dy;
-        while(temp.x >= 0 && temp.y >= 0 && temp.x < this.size && temp.y < this.size) {
-            s += getSpace(temp);
-            temp.x += dx;
-            temp.y += dy;
-        }
-        return s;
-    }
+    
     public Set<Point> getPieces(int value) {
         Set<Point> pieceLoc = new HashSet<Point>();
         for(int i = 0; i < size; i++) {
@@ -75,6 +49,8 @@ public class Gameboard {
     }
 
     public int getSpace(Point p) {
+        if (p.x < 0 || p.y < 0 || p.x >= this.size || p.y >= this.size)
+            return -1;
         return board[p.y][p.x];
     }
 
@@ -85,25 +61,31 @@ public class Gameboard {
 
 
     public int setSpaceRecurse(Point p, int val) {
-        boolean b = false;
-        for(int i = 0; i < DELTAS.length; i++) {
-            if(convertSpaces((Point) p.clone(), DELTAS[i], val)) {
-                b = true;
-            }
-        }
-        if(b) {
+        if(isLegal(p, val, true)) {
             setSpace(p, val);
         }
         return val;
     }
 
-    private boolean convertSpaces(Point p, Point d, int val) {
-        p.x += d.x;
-        p.y += d.y;
+    public boolean isLegal(Point p, int val, boolean convert) {
+        boolean b = false;
+        for(int i = 0; i < DELTAS.length; i++) {
+            if(getSpace(new Point(p.x + DELTAS[i].x, p.y + DELTAS[i].y)) == val || getSpace(new Point(p.x + DELTAS[i].x, p.y + DELTAS[i].y)) == -1)
+                continue;
+            if(isLegal((Point) p.clone(), DELTAS[i], val, convert)) {
+                b = true;
+            }
+        }
+        return b;
+    }
+
+    private boolean isLegal(Point p, Point d, int val, boolean convert) {
+        p.translate(d.x, d.y);
         if (p.x < 0 || p.y < 0 || p.x >= this.size || p.y >= this.size || getSpace(p) == 0)
             return false;
-        if(convertSpaces((Point) p.clone(), d, val)) {
-           setSpace(p, val);
+        if(isLegal((Point) p.clone(), d, val, convert)) {
+           if(convert)
+            setSpace(p, val);
            return true; 
         }
         if(getSpace(p) == val)
