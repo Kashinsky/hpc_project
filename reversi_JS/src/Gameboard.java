@@ -92,4 +92,12 @@ public class Gameboard {
             return true;
         return false;
     }
+    public Set<Point> getMoveSet(int player) {
+        Set<Point> moveSet = new HashSet<Point>();
+        for(int i = 0; i < board.length; i++) {
+            for(int j = 0; j < board.length; j++) {
+                if(isLegal(new Point(
+            }
+        }
+    }
 }
