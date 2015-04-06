@@ -31,6 +31,7 @@ public class Reversi {
         int turn = 1;
         while(true) {
             System.out.println(printBoard());
+            System.out.println(gameboard.getMoveSet(turn));
             //System.out.println(printPieces(turn));
             System.out.printf("Player(%d)> ", turn);
             int row = sc.nextInt();

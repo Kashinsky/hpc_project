@@ -96,8 +96,11 @@ public class Gameboard {
         Set<Point> moveSet = new HashSet<Point>();
         for(int i = 0; i < board.length; i++) {
             for(int j = 0; j < board.length; j++) {
-                if(isLegal(new Point(
+                if(isLegal(new Point(i,j), player, false))
+                    moveSet.add(new Point(i,j));
             }
         }
+        //System.out.println(moveSet);
+        return moveSet;
     }
 }
