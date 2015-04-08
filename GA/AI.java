@@ -1,17 +1,20 @@
 import java.util.Random;
 public class AI {
-    public static final int MAX_GENE_LENGTH = 64;
-    private byte[] gene;
+    public static final int MAX_GENE_LENGTH = 10;
+    private float[] gene;
     private double fitness;
 
     public AI() {
         //generate random gene sequence for initial construction
-        Random rand = new Random()
-        this.gene = new byte[MAX_GENE_LENGTH];
-        rand.nextBytes(this.gene);
+        Random rand = new Random();
+        float[] g = new float[MAX_GENE_LENGTH];
+        for(int i = 0; i < g.length; i++) {
+            g[i] = (rand.nextFloat() * 4) - 2;
+        }
+        this(g);
     }
 
-    public AI(byte[] gene) {
+    public AI(float[] gene) {
         this.gene = gene;
     }
 
@@ -24,15 +27,16 @@ public class AI {
         return this.fitness;
     }
 
-    public byte[] getGene() {
+    public float[] getGene() {
         return this.gene;
     }
 
-    public byte getGeneSegment(int i) {
+    public float getGeneSegment(int i) {
         return this.gene[i];
     }
 
-    public void setGeneSegment(int i, byte val) {
+    public void setGeneSegment(int i, float val) {
         this.gene[i] = val;
     }
+
 }
