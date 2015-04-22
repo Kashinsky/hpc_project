@@ -1,5 +1,8 @@
+package reversi_serial;
 import java.util.*;
 import java.awt.Point;
+import ga_serial.*;
+
 public class Reversi {
     //fields
     public static final int DEFAULT_BOARD_SIZE = 8;
@@ -26,6 +29,28 @@ public class Reversi {
         return s;
     }
     
+    public void run(AI p1, AI p2) {
+        boolean playable = true;
+        int player = 1;
+        Set<Point> moveSet = this.gameboard.getMoveSet(player);
+        Point chosenMove;
+        while(playable) {
+            if(player == 1) {
+                chosenMove = p1.move(moveSet);
+                gameboard.setSpaceRecurse(chosenMove, player);
+                player = 2;
+            } else {
+                chosenMove = p2.move(moveSet);
+                gameboard.setSpaceRecurse(chosenMove, player);
+                player = 1;
+            }
+            moveSet = this.gameboard.getMoveSet(player);
+            playable = !moveSet.isEmpty();
+        }
+        p1.setFitness(gameboard.getPieceCount(1));
+        p2.setFitness(gameboard.getPieceCount(2));    
+    }
+
     public void humanRun() {
         Scanner sc = new Scanner(System.in);
         int turn = 1;

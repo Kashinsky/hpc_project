@@ -1,3 +1,4 @@
+package reversi_ga;
 import java.util.Random;
 public class GA {
 

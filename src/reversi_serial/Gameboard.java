@@ -1,3 +1,4 @@
+package reversi_serial;
 import java.util.*;
 import java.awt.Point;
 import java.util.regex.*;
@@ -92,6 +93,7 @@ public class Gameboard {
             return true;
         return false;
     }
+    
     public Set<Point> getMoveSet(int player) {
         Set<Point> moveSet = new HashSet<Point>();
         for(int i = 0; i < board.length; i++) {
@@ -100,7 +102,18 @@ public class Gameboard {
                     moveSet.add(new Point(i,j));
             }
         }
-        //System.out.println(moveSet);
         return moveSet;
     }
+
+    public int getPieceCount(int player) {
+        int count = 0;
+        for(int i = 0; i < board.length; i++) {
+            for(int j = 0; j < board.length; j++) {
+                if(player == board[i][j])
+                    count++;
+            }
+
+        }
+
+    } 
 }
