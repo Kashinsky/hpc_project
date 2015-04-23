@@ -32,7 +32,7 @@ public class AI {
     }
 
     public Point move(Set<Point> moveSet) {
-        
+       return null; 
 
     }
     

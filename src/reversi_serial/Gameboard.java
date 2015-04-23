@@ -114,6 +114,6 @@ public class Gameboard {
             }
 
         }
-
+        return count;
     } 
 }
