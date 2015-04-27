@@ -16,11 +16,6 @@ What will be parallelized:
     4) Crossbreed and apply mutations.
     5) Jump to step 2.
 
-Log:
-    Sprint 1:
-        [X] Find project idea.
-    Sprint 2:
-        [ ] Create sample cuda and mpi code to understand how
-            to implement game.
-        [ ] Hard code general rules for Orthello.
-        [ ] (Potentially) write code for AI.
+Notes:
+    - Make sure you either add src/ to your CLASSPATH or compile using java's classpath flag (-cp)
+    

@@ -32,8 +32,8 @@ public class AI {
     }
 
     public Point move(Set<Point> moveSet) {
-       return null; 
-
+        
+        return null;
     }
     
     public double getFitness() {
