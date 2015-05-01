@@ -8,7 +8,7 @@ public class AI {
     public static final int MAX_GENE_LENGTH = 10;
     private float[] gene;
     private double fitness;
-    private final int[][] weightBoard = new int[][] {
+    private final int[][] WEIGHT_BOARD = new int[][] {
         {0, 1, 2, 3, 3, 2, 1, 0},
         {1, 2, 3, 4, 4, 3, 2, 1},
         {4, 5, 6, 7, 7, 6, 5, 4},
@@ -41,8 +41,14 @@ public class AI {
     }
 
     public Point move(Set<Point> moveSet) {
-        
-        return null;
+        Iterator<Point> itr = moveSet.iterator();
+        Point max = itr.next();
+        while(itr.hasNext()) {
+            Point curr = itr.next();
+            if(getWeight(curr) > getWeight(max))
+                max = curr;
+        }
+        return max;
     }
     
     public double getFitness() {
@@ -63,5 +69,9 @@ public class AI {
 
     public void setFitness(double val) {
         this.fitness = val;
+    }
+
+    private float getWeight(Point p) {
+        return gene[WEIGHT_BOARD[p.x][p.y]];
     }
 }
