@@ -8,7 +8,16 @@ public class AI {
     public static final int MAX_GENE_LENGTH = 10;
     private float[] gene;
     private double fitness;
-    
+    private final int[][] weightBoard = new int[][] {
+        {0, 1, 2, 3, 3, 2, 1, 0},
+        {1, 2, 3, 4, 4, 3, 2, 1},
+        {4, 5, 6, 7, 7, 6, 5, 4},
+        {5, 6, 7, 8, 8, 7, 6, 5},
+        {5, 6, 7, 8, 8, 7, 6, 5},
+        {4, 5, 6, 7, 7, 6, 5, 4},
+        {1, 2, 3, 4, 4, 3, 2, 1},
+        {0, 1, 2, 3, 3, 2, 1, 0}
+    };
 
     public AI() {
         //generate random gene sequence for initial construction
