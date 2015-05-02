@@ -36,18 +36,15 @@ public class Reversi {
         Point chosenMove;
         while(playable) {
             if(player == 1) {
-                System.out.println("P1 TURN");
                 chosenMove = p1.move(moveSet);
                 gameboard.setSpaceRecurse(chosenMove, player);
                 player = 2;
             } else {
-                System.out.println("P2 TURN");
                 chosenMove = p2.move(moveSet);
                 gameboard.setSpaceRecurse(chosenMove, player);
                 player = 1;
             }
             moveSet = this.gameboard.getMoveSet(player);
-            System.out.println(gameboard.toString());
             playable = !moveSet.isEmpty();
         }
         p1.setFitness(gameboard.getPieceCount(1));

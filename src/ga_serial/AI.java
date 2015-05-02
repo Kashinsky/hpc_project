@@ -42,7 +42,6 @@ public class AI {
     }
 
     public Point move(Set<Point> moveSet) {
-        System.out.println(Arrays.toString(moveSet.toArray()));
         Iterator<Point> itr = moveSet.iterator();
         Point max = itr.next();
         while(itr.hasNext()) {
