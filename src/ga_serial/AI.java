@@ -3,6 +3,7 @@ import java.util.Random;
 import reversi_serial.Reversi;
 import java.awt.Point;
 import java.util.*;
+import java.util.Arrays;
 
 public class AI {
     public static final int MAX_GENE_LENGTH = 10;
@@ -41,6 +42,7 @@ public class AI {
     }
 
     public Point move(Set<Point> moveSet) {
+        System.out.println(Arrays.toString(moveSet.toArray()));
         Iterator<Point> itr = moveSet.iterator();
         Point max = itr.next();
         while(itr.hasNext()) {
