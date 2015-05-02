@@ -70,7 +70,7 @@ public class Gameboard {
 
     public boolean isLegal(Point p, int val, boolean convert) {
         boolean b = false;
-        if(getSpace(p) == val)
+        if(getSpace(p) != 0)
             return b;
         for(int i = 0; i < DELTAS.length; i++) {
             if(getSpace(new Point(p.x + DELTAS[i].x, p.y + DELTAS[i].y)) == val || getSpace(new Point(p.x + DELTAS[i].x, p.y + DELTAS[i].y)) == -1)
