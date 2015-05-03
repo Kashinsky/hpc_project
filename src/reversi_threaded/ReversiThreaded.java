@@ -5,7 +5,7 @@ import java.util.Set;
 import java.util.concurrent.Semaphore;
 import java.awt.Point;
 
-public class ReversiThreaded implements Runnable {
+public class ReversiThreaded extends Thread {
     
     //fields
     public static final int DEFAULT_BOARD_SIZE = 8;
@@ -57,11 +57,12 @@ public class ReversiThreaded implements Runnable {
             a1.setFitness(gameboard.getPieceCount(1));
             a2.setFitness(gameboard.getPieceCount(2));
             release();
-        } catch(Exception e)
+        } catch(Exception e) {
             e.printStackTrace();
+        }
     }
     
-    private synchronized release() {
+    private synchronized void release() {
         sem.release();
     }
 }

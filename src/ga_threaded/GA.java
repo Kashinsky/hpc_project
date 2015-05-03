@@ -1,4 +1,6 @@
 package ga_threaded;
+
+import reversi_threaded.*;;
 import java.util.concurrent.Semaphore;
 import java.util.Random;
 import java.util.ArrayList;
@@ -11,11 +13,13 @@ public class GA {
     private int MAX_GEN; // max generation number
     private int MAX_POP; // max population size
     public List<AI> popList; // the list of AI's (ie. the population)
+    public Semaphore sem;
 
     public GA (int maxGen, int maxPop) {
         this.MAX_GEN = maxGen;
         this.MAX_POP = maxPop;
         this.popList = new ArrayList<AI>();
+        sem = new Semaphore(MAX_POP/2);
         fillPopulation();
     }
     
@@ -26,10 +30,20 @@ public class GA {
     }
 
     public void processGen() {
+        List<ReversiThreaded> threads = new ArrayList<ReversiThreaded>();
         for(int i = 0; i < popList.size(); i=i+2) {
             if(i < popList.size() -1) {
-                (popList.get(i)).play(popList.get(i+1));
+                threads.add(new ReversiThreaded(popList.get(i), popList.get(i+1), sem));
             }
+        }
+        for(int i = 0; i < threads.size(); i++)
+            (threads.get(i)).start();
+        try {
+            sem.acquire(MAX_POP/2);
+            sem.release(MAX_POP/2);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(0);
         }
         this.generation++;
     }
