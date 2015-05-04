@@ -15,9 +15,9 @@ public class GA {
     //added for MPI stuff
     private int rank;
     private int size;
-    private Liast<Float> geneList; // list of genes which correspond to AIs
+    private List<Float> geneList; // list of genes which correspond to AIs
     
-    public GA (int maxGen, int maxPop, String[] args) {
+    public GA (int maxGen, int maxPop, String[] args) throws MPIException {
         this.MAX_GEN = maxGen;
         this.MAX_POP = maxPop;
         this.popList = new ArrayList<AI>();

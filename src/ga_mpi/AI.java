@@ -5,7 +5,7 @@ import java.awt.Point;
 import java.util.*;
 import java.util.Arrays;
 
-public class AI implements {
+public class AI {
     public static final int MAX_GENE_LENGTH = 10;
     private float[] gene;
     private double fitness;
