@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 public class GA {
 
-    public static final double CROSSOVER_CHANCE = 0.5; // the chance a gene can be inherited
-    public static final double MUTATION_CHANCE = 0.015; // the chance a gene will be mutated 
     private int generation;// the current generation number
     private int MAX_GEN; // max generation number
     private int MAX_POP; // max population size
@@ -19,7 +17,7 @@ public class GA {
         this.MAX_GEN = maxGen;
         this.MAX_POP = maxPop;
         this.popList = new ArrayList<AI>();
-        sem = new Semaphore(MAX_POP/2);
+        sem = new Semaphore(MAX_POP/2, true);
         fillPopulation();
     }
     
@@ -32,7 +30,7 @@ public class GA {
     public void processGen() {
         List<ReversiThreaded> threads = new ArrayList<ReversiThreaded>();
         for(int i = 0; i < popList.size(); i=i+2) {
-            if(i < popList.size() -1) {
+            if(i < popList.size()-1) {
                 threads.add(new ReversiThreaded(popList.get(i), popList.get(i+1), sem));
             }
         }
@@ -48,44 +46,7 @@ public class GA {
         this.generation++;
     }
 
-    public void performCrossBreeding() {
-        int currPopSize =  popList.size();
-        for(int i = 0; i < currPopSize; i= i+2) {
-            if(i < currPopSize-1) {
-                AI a1 = popList.get(i);
-                AI a2 = popList.get(i+1);
-                popList.add(crossBreed(a1, a2));
-            }
-        }
-
-    }
-
-    public AI crossBreed(AI ai1, AI ai2) {
-        float[] f = new float[AI.MAX_GENE_LENGTH];
-        Random rand = new Random();
-        for(int i = 0; i < f.length; i++) {
-            if(rand.nextDouble() <= CROSSOVER_CHANCE)
-                f[i] = ai1.getGeneSegment(i);
-            else
-                f[i] = ai2.getGeneSegment(i);
-        }
-        return new AI(f);
-    }
     
-    public void applyMutations() {
-        for(int i = 0; i < popList.size(); i++)
-            mutate(popList.get(i));
-    }
-
-    public void mutate(AI ai) {
-        Random rand = new Random();
-        for(int i = 0; i < AI.MAX_GENE_LENGTH; i++) {
-            if(rand.nextDouble() <= MUTATION_CHANCE) {
-                ai.setGeneSegment(i, (rand.nextFloat() * 4)- 2);
-            }
-        }
-    }
-
     public double getAverageFitness() {
         double avg = 0;
         for(int i = 0; i < popList.size(); i++) {
@@ -111,14 +72,36 @@ public class GA {
         return max;
     }
 
+    public void breedGen() {
+        List<Breeder> breeders = new ArrayList<Breeder>();
+        for(int i = 0; i < popList.size(); i=i+2) {
+            if(i < popList.size()-1) {
+                breeders.add(new Breeder(popList.get(i), popList.get(i+1), sem));
+            }
+        }
+        for(int i = 0; i < breeders.size(); i++)
+            (breeders.get(i)).start();
+        try {
+            sem.acquire(MAX_POP/2);
+            sem.release(MAX_POP/2);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(0);
+        }
+        for(int i = 0; i < breeders.size(); i++) {
+            popList.add((breeders.get(i)).getAI());
+
+        }
+
+    }
+
     public void run(int steps) {
         while(steps > 0 && generation < MAX_GEN) {
             processGen();
             double avg = getAverageFitness();
             removeUnfit(avg);
+            breedGen();
             System.out.printf("Generation: %d\nAverageFitness: %f\nPeakFitness %f\n", this.generation, avg, findPeak());
-            performCrossBreeding();
-            applyMutations();
             fillPopulation();
             steps--;
         }
