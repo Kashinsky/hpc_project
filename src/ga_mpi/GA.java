@@ -7,44 +7,48 @@ public class GA {
 
     public static final double CROSSOVER_CHANCE = 0.5; // the chance a gene can be inherited
     public static final double MUTATION_CHANCE = 0.015; // the chance a gene will be mutated 
-    private int generation;// the current generation number
-    private int MAX_GEN; // max generation number
-    private int MAX_POP; // max population size
-    public List<AI> popList; // the list of AI's (ie. the population)
+    //private int generation;// the current generation number
+    //private int MAX_GEN; // max generation number
+    //private int MAX_POP; // max population size
+    //public List<AI> popList; // the list of AI's (ie. the population)
     
     //added for MPI stuff
-    private int rank;
-    private int size;
-    private List<Float> geneList; // list of genes which correspond to AIs
+    public static final int MAX_GEN;
+    public static final int MAX_POP;
     
-    public GA (int maxGen, int maxPop, String[] args) throws MPIException {
+    //private int rank;
+    //private int size;
+    //private List<Float> geneList; // list of genes which correspond to AIs
+    //private int chunkSize;
+    
+    /*public GA (int maxGen, int maxPop, String[] args) throws MPIException {
         this.MAX_GEN = maxGen;
         this.MAX_POP = maxPop;
         this.popList = new ArrayList<AI>();
    
         // tweaks for mpi     
         MPI.Init(args);
-        rank = MPI.COMM_WORLD.getRank();
-        size = MPI.COMM_WORLD.getSize();
+        //rank = MPI.COMM_WORLD.getRank();
+        //size = MPI.COMM_WORLD.getSize();
         //fillPopulation();
-    }
+    }*/
     
-    public void fillPopulation() {
+    public void fillPopulation(List<AI> popList) {
         while(popList.size() < MAX_POP) {
             popList.add(new AI());
         }
     }
 
-    public void processGen() {
+    public void processGen(List<AI> popList) {
         for(int i = 0; i < popList.size(); i=i+2) {
             if(i < popList.size() -1) {
                 (popList.get(i)).play(popList.get(i+1));
             }
         }
-        this.generation++;
+        //this.generation++;
     }
 
-    public void performCrossBreeding() {
+    public void performCrossBreeding(List<AI> popList) {
         int currPopSize =  popList.size();
         for(int i = 0; i < currPopSize; i= i+2) {
             if(i < currPopSize-1) {
@@ -68,7 +72,7 @@ public class GA {
         return new AI(f);
     }
     
-    public void applyMutations() {
+    public void applyMutations(List<AI> popList) {
         for(int i = 0; i < popList.size(); i++)
             mutate(popList.get(i));
     }
@@ -82,7 +86,7 @@ public class GA {
         }
     }
 
-    public double getAverageFitness() {
+    public double getAverageFitness(List<AI> popList) {
         double avg = 0;
         for(int i = 0; i < popList.size(); i++) {
             avg += popList.get(i).getFitness();
@@ -90,14 +94,14 @@ public class GA {
         return (avg / (double) popList.size());
     }
 
-    public void removeUnfit(double avg) {
+    public void removeUnfit(double avg, List<AI> popList) {
         for(int i = 0; i < popList.size(); i++) {
             if(popList.get(i).getFitness() < avg)
                 popList.remove(i);
         }
     }
 
-    public double findPeak() {
+    public double findPeak(List<AI> popList) {
         double max = 0;
         for(int i = 0; i < popList.size(); i++) {
             double temp = popList.get(i).getFitness();
@@ -107,13 +111,16 @@ public class GA {
         return max;
     }
 
-    public void run(int steps) {
+    /*public void run(int steps) {
+        rank = MPI.COMM_WORLD.getRank();
+        size = MPI.COMM_WORLD.getSize();
         // only the head node needs the full list
         if (rank == 0)
             fillPopulation();
     
         while(steps > 0 && generation < MAX_GEN) {
-            
+            if (rank == 0) {
+            }
             
         
             processGen();
@@ -128,5 +135,116 @@ public class GA {
                 steps--;
             }
         }
+    }*/
+    
+    public static void main(String args[]) throws MPIException {
+        MPI.Init(args);
+        int generation = 0;// the current generation number
+        //private int MAX_GEN; // max generation number
+        //private int MAX_POP; // max population size
+        List<AI> popList = new ArrayList<AI>(); // the list of AI's (ie. the population)
+        int rank = MPI.COMM_WORLD.getRank();
+        int size = MPI.COMM_WORLD.getSize();
+        int chunkSize = MAX_POP/(size-1);
+        
+        //steps have been removed
+        //while(steps > 0 && generation < MAX_GEN)
+        
+        while(generation < MAX_GEN) {
+            if (rank == 0) {
+                fillPopulation(popList);
+                
+                //break population into chunks and send them
+                for (int i = 1; i < MAX_POP/chunkSize; i++) {
+                    float[] chunk = new array[chunkSize * 10];
+                    for (int j = 0; j < chunkSize; j++) {
+                        float[] curGenes = popList.get((i-1) * chunkSize + j).gene;
+                        for (int k = 0; k < AI.MAX_GENE_LENGTH; k++) {
+                            chunk[j * chunkSize + k] = curGenes[k];
+                        }
+                    }
+                    MPI.COMM_WORLD.send(chunk,
+                                        chunkSize * 10,
+                                        MPI.FLOAT,
+                                        i,
+                                        23);
+                }
+                
+                for (int i = 1; i < MAX_POP/chunkSize; i++) {
+                    double[] chunk = new array[chunkSize];
+                    MPI.COMM_WORLD.recv(chunk,
+                                        chunkSize,
+                                        MPI.DOUBLE,
+                                        i,
+                                        37);
+                    for (int j = 0; j < chunkSize; j++) {
+                        popList.get((i-1) * chunkSize + j).setFitness(chunk[j]);
+                    }
+                }
+                
+                
+                double avg = getAverageFitness(popList);
+                removeUnfit(avg, popList);
+                System.out.printf("Generation: %d\nAverageFitness: %f\nPeakFitness %f\n", this.generation, avg, findPeak(popList));
+                performCrossBreeding(popList);
+                applyMutations(popList);
+                fillPopulation(popList);
+                
+            }
+            else {
+                popList = new ArrayList<AI>();
+                float[] geneChunk;
+                MPI.COMM_WORLD.recv(geneChunk,
+                                    chunkSize * 10,
+                                    MPI.FLOAT,
+                                    rank,
+                                    23);
+                for (int i = 0; i < chunkSize * 10; i++) {
+                    float[] gene = new float[AI.MAX_GENE_LENGTH];
+                    for (int j = 0; j < AI.MAX_GENE_LENGTH; j++) {
+                        gene[j] = geneChunk[i+j];
+                    }
+                    AI ai = new AI(gene);
+                    popList.add(AI);
+                }
+                
+                processGen(popList);
+                
+                double[] fitnesses = new double[chunkSize];
+                for (int i; i < chunkSize; i++) {
+                    fitnesses[i] = popList.get(i).getFitness();
+                }
+                MPI.COMM_WORLD.send(fitnesses,
+                                    chunkSize,
+                                    MPI.DOUBLE,
+                                    0,
+                                    37);
+            }
+            generation++;
+        }
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }
