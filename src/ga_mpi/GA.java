@@ -160,14 +160,16 @@ public class GA {
                     for (int j = 0; j < chunkSize; j++) {
                         float[] curGenes = popList.get((i-1) * chunkSize + j).getGene();
                         for (int k = 0; k < AI.MAX_GENE_LENGTH; k++) {
-                            chunk[j * chunkSize + k] = curGenes[k];
+                            chunk[j + k] = curGenes[k];
                         }
                     }
+                    //System.out.println("Sending to " + i);
                     MPI.COMM_WORLD.send(chunk,
                                         chunkSize * 10,
                                         MPI.FLOAT,
                                         i,
                                         23);
+                    //System.out.println("Sent to " + i);
                 }
                 
                 for (int i = 1; i < MAX_POP/chunkSize; i++) {
@@ -194,15 +196,17 @@ public class GA {
             else {
                 popList = new ArrayList<AI>();
                 float[] geneChunk = new float[chunkSize * 10];
+                //System.out.println("Waiting to recv" + rank);
                 MPI.COMM_WORLD.recv(geneChunk,
                                     chunkSize * 10,
                                     MPI.FLOAT,
-                                    rank,
+                                    0,
                                     23);
-                for (int i = 0; i < chunkSize * 10; i++) {
+                //System.out.println("recved" + rank);
+                for (int i = 0; i < chunkSize; i++) {
                     float[] gene = new float[AI.MAX_GENE_LENGTH];
                     for (int j = 0; j < AI.MAX_GENE_LENGTH; j++) {
-                        gene[j] = geneChunk[i+j];
+                        gene[j] = geneChunk[i*10+j];
                     }
                     AI ai = new AI(gene);
                     popList.add(ai);
