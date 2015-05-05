@@ -155,7 +155,7 @@ public class GA {
                 fillPopulation(popList);
                 
                 //break population into chunks and send them
-                for (int i = 1; i < MAX_POP/chunkSize; i++) {
+                for (int i = 1; i <= MAX_POP/chunkSize; i++) {
                     float[] chunk = new float[chunkSize * 10];
                     for (int j = 0; j < chunkSize; j++) {
                         float[] curGenes = popList.get((i-1) * chunkSize + j).getGene();
@@ -171,14 +171,16 @@ public class GA {
                                         23);
                     //System.out.println("Sent to " + i);
                 }
-                
-                for (int i = 1; i < MAX_POP/chunkSize; i++) {
+
+                for (int i = 1; i <= MAX_POP/chunkSize; i++) {
                     double[] chunk = new double[chunkSize];
+                    //System.out.println("Receiving from " + i);
                     MPI.COMM_WORLD.recv(chunk,
                                         chunkSize,
                                         MPI.DOUBLE,
                                         i,
                                         37);
+                    //System.out.println("Received from " + i);
                     for (int j = 0; j < chunkSize; j++) {
                         popList.get((i-1) * chunkSize + j).setFitness(chunk[j]);
                     }
@@ -226,29 +228,7 @@ public class GA {
             }
             generation++;
         }
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+        //System.out.printf("Process %d done", rank);
+        MPI.Finalize();
+    }    
 }
